@@ -1,0 +1,10 @@
+# Common IDEs
+.idea/*
+
+# Mac
+.DS_Store
+
+# Project
+node_modules/
+audio-downloads/
+api-keys.js
