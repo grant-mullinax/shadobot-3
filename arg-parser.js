@@ -13,8 +13,12 @@ module.exports = function(msg, argTypes){
                 args.push(msg.member.voiceChannel);
                 break;
             case 'string':
-                args.push(splitMsg[userInputIndex]);
-                userInputIndex++;
+                if (splitMsg.length-1 <= userInputIndex) {
+                    args.push(splitMsg[userInputIndex]);
+                    userInputIndex++;
+                }else{
+                    args.push(null);
+                }
                 break;
             case 'channel':
                 args.push(msg.channel);

@@ -7,4 +7,4 @@
 # Project
 node_modules/
 audio-downloads/
-api-keys.js
+libs/api-keys.js

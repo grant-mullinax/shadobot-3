@@ -1,8 +1,10 @@
 const fs = require('fs');
 const ytdl = require('ytdl-core');
+const opus = require('opusscript');
 
 let voiceConnection;
 let dispatcher;
+let voiceReceiver;
 
 function idFromYtUrl(url){
     let eqIndex = url.indexOf('=');
@@ -10,6 +12,30 @@ function idFromYtUrl(url){
 }
 
 module.exports = {
+    recordAudio: async function(user){
+        if (!voiceConnection){
+            return;
+        }
+        if (!voiceReceiver){
+            voiceReceiver = voiceConnection.createReceiver();
+        }
+        let opusStream = voiceReceiver.createOpusStream(user);
+
+        let samplingRate = 48000;
+        let frameDuration = 20;
+        let channels = 2;
+
+        let encoder = new opus(samplingRate, channels, opus.Application.VOIP);
+        let frameSize = samplingRate * frameDuration / 1000;
+
+        let decoded;
+        setTimeout(async function () {
+            console.log(opusStream);
+            decoded = encoder.decode(opusStream);
+            console.log(decoded);
+        }, 5000);
+    },
+
     joinVoiceChannel: async function(voiceChannel){
         return new Promise(resolve => {
             voiceChannel.join().then(connection => {

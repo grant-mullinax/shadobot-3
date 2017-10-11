@@ -1,4 +1,4 @@
-const keys = require('./api-keys');
+const keys = require('./libs/api-keys');
 
 const Discord = require('discord.js');
 const fs = require('fs');
@@ -8,6 +8,8 @@ const baseCommands = require('./commands');
 let commands = baseCommands;
 
 const client = new Discord.Client();
+
+//todo more rejects! Handle it!
 
 async function parseMessage(msg){
     let commandName = msg.content.split(' ')[0];
@@ -25,6 +27,7 @@ async function parseMessage(msg){
             }
 
             dmChannel.send("i can only be used in the bot channel, fool!");
+            msg.delete();
         }
     }
 }
