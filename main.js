@@ -3,24 +3,26 @@ const keys = require('./libs/api-keys');
 const Discord = require('discord.js');
 const fs = require('fs');
 const ytdl = require('ytdl-core');
-const baseCommands = require('./commands');
 
-let commands = baseCommands;
+let commands = {};
+function register(newCmds){
+    commands = Object.assign(commands, newCmds);
+}
+
+register(require('./commands/music'));
+register(require('./commands/rng'));
+register(require('./commands/meme'));
 
 const client = new Discord.Client();
 
 //todo more rejects! Handle it!
 
 async function parseMessage(msg){
+
     let commandName = msg.content.split(' ')[0];
     if (typeof commands[commandName] !== 'undefined'){
-        if (msg.channel.name.includes('bot')){
-            try {
-                commands[commandName].execute(msg);
-            }catch (error){
-                msg.channel.send('Uh oh! I encountered an error. ```'+error+'```');
-            }
-        }else{
+
+        if (!msg.channel.name.includes('bot')) {
             let dmChannel = msg.author.dmChannel;
             if (dmChannel === null) {
                 dmChannel = await msg.author.createDM();
@@ -28,6 +30,12 @@ async function parseMessage(msg){
 
             dmChannel.send("i can only be used in the bot channel, fool!");
             msg.delete();
+        }
+
+        try {
+            commands[commandName].execute(msg);
+        }catch (error){
+            msg.channel.send('Uh oh! I encountered an error. ```'+error+'```');
         }
     }
 }

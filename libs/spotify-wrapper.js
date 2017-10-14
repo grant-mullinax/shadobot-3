@@ -12,6 +12,7 @@ api.clientCredentialsGrant()
 
 module.exports = {
     getRandomSongDescriptionFromPlayist: async function (user, id) {
+        console.log(user, id);
         return new Promise((resolve, reject) => {
             //wew lad
             //gotta get the total list
@@ -20,6 +21,7 @@ module.exports = {
                 let length = lengthData.body['total'];
                 let index = Math.ceil(Math.random() * length);
                 api.getPlaylistTracks(user, id, {'offset': index, 'limit': 1, 'fields': 'items'}).then(function (data) {
+                    //console.log(data.body);
                     let items = data.body['items'];
                     let item = items[0];
                     let track = item['track'];
@@ -29,5 +31,10 @@ module.exports = {
                 });
             });
         });
+    },
+    parseNameAndIdFromURI: function (str) {
+        const userEndIndex = str.indexOf(":user:") + 6; //add for str len
+        const playlistStartIndex = str.indexOf(":playlist:");
+        return [str.substring(userEndIndex, playlistStartIndex), str.substring(playlistStartIndex + 10)]
     }
 };

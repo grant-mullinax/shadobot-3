@@ -17,7 +17,13 @@ module.exports = async function (query) {
                 return;
             }
 
-            resolve(results[0]);
+            for (let i=0; i<10;i++){
+                let item = results[i];
+                if (item['kind'] = 'youtube#video'){
+                    resolve(item);
+                    return;
+                }
+            }
         });
     });
 };

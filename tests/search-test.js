@@ -1,4 +1,4 @@
-let search = require('../libs/youtube-search-wrapped');
+let search = require('../libs/youtube-wrapper');
 
 async function test() {
     search('horse');

@@ -1,4 +1,4 @@
-const spotify = require('../libs/spotify');
+const spotify = require('../libs/spotify-wrapper');
 
 setTimeout(function () {
     spotify.getRandomSongDescriptionFromPlayist(0,1);

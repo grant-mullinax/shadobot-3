@@ -11,11 +11,13 @@ function idFromYtUrl(url){
     return url.substring(eqIndex+1, eqIndex+12);
 }
 
+//todo more servers!
+
 module.exports = {
     recordAudio: async function(user){
-        if (!voiceConnection){
+        if (!voiceConnection)
             return;
-        }
+
         if (!voiceReceiver){
             voiceReceiver = voiceConnection.createReceiver();
         }
@@ -38,6 +40,15 @@ module.exports = {
 
     joinVoiceChannel: async function(voiceChannel){
         return new Promise(resolve => {
+            if (voiceConnection)
+                if (voiceConnection.channel === voiceChannel) {
+                    resolve(voiceConnection);
+                    return;
+                }
+
+            if (dispatcher)
+                dispatcher.end();
+
             voiceChannel.join().then(connection => {
                 voiceConnection = connection;
                 resolve(connection);
@@ -86,6 +97,7 @@ module.exports = {
             if (voiceConnection) {
                 console.log('Playing file!');
                 dispatcher = voiceConnection.playFile(__dirname + '\\audio-downloads\\' + id + '.mp3');
+                dispatcher.setVolume(0.4);
                 resolve(dispatcher);
             } else {
                 console.log('No voice connection in playfile!');
@@ -96,21 +108,33 @@ module.exports = {
 
     pause: function(){
         if (dispatcher)
-            dispatcher.pause()
+            dispatcher.pause();
     },
 
     resume: function(){
         if (dispatcher)
-            dispatcher.resume()
+            dispatcher.resume();
     },
 
-    stop: function(){
+    stop: function() {
         if (dispatcher)
-            dispatcher.end()
+            dispatcher.end();
+    },
+
+    disconnect: function(){
+        if (voiceConnection) {
+            voiceConnection.disconnect();
+            voiceConnection = dispatcher = voiceReceiver = null;
+        }
     },
 
     volume: function(v){
         if (dispatcher)
             dispatcher.setVolume(v)
+    },
+
+    isPlaying: function () {
+        if (dispatcher)
+            return dispatcher.isPlaying();
     }
 };
