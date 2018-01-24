@@ -13,7 +13,6 @@ module.exports = function(msg, argTypes){
                 args.push(msg.member.voiceChannel);
                 break;
             case 'string':
-                console.log(userInputIndex < splitMsg.length);
                 if (splitMsg.length > userInputIndex) {
                     args.push(splitMsg[userInputIndex]);
                     userInputIndex++;

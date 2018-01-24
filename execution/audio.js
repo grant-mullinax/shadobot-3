@@ -3,18 +3,11 @@ const ytdl = require('ytdl-core');
 const opus = require('opusscript');
 
 let voiceConnection;
-let dispatcher;
-let voiceReceiver;
-
-function idFromYtUrl(url){
-    let eqIndex = url.indexOf('=');
-    return url.substring(eqIndex+1, eqIndex+12);
-}
 
 //todo more servers!
 
 module.exports = {
-    recordAudio: async function(user){
+    /*recordAudio: async function(user){
         if (!voiceConnection)
             return;
 
@@ -32,109 +25,111 @@ module.exports = {
 
         let decoded;
         setTimeout(async function () {
-            console.log(opusStream);
+            //console.log(opusStream);
             decoded = encoder.decode(opusStream);
-            console.log(decoded);
+            //console.log(decoded);
         }, 5000);
-    },
+    },*/
 
     joinVoiceChannel: async function(voiceChannel){
-        return new Promise(resolve => {
-            if (voiceConnection)
-                if (voiceConnection.channel === voiceChannel) {
-                    resolve(voiceConnection);
-                    return;
-                }
+        if (voiceConnection)
+            if (voiceConnection.channel === voiceChannel) {
+                return voiceConnection;
+            }
 
-            if (dispatcher)
-                dispatcher.end();
+        if (voiceConnection)
+            voiceConnection.dispatcher.end();
 
-            voiceChannel.join().then(connection => {
-                voiceConnection = connection;
-                resolve(connection);
-            });
+        voiceChannel.join().then(connection => {
+            voiceConnection = connection;
+            return connection;
         });
     },
 
-    downloadFile: async function(url){
+    getAudioFromUrl: async function(url){
         return new Promise((resolve, reject) => {
-            if (!ytdl.validateLink(url)){
+            if (!ytdl.validateURL(url)){
                 reject();
                 return;
             }
 
-            let id = idFromYtUrl(url);
+            let id = ytdl.getURLVideoID(url);
             fs.access(__dirname + '\\audio-downloads\\' + id + '.mp3', fs.constants.R_OK | fs.constants.W_OK, (err) => {
                 if (err) {
                     let request;
                     try { //todo get rid of maybe
                         request = ytdl(url, {filter: 'audioonly'});
                     }catch(error) {
-                        console.log('invalid youtube link ' + error);
-                        reject();
+                        reject(new Error('invalid youtube link caused error : ' + error));
                         return;
                     }
 
                     //can i play directly from writestream?
                     let writeStream = fs.createWriteStream('audio-downloads/' + id + '.mp3');
-                    console.log('File downloading!');
-                    writeStream.on('close', function () {
+
+                    /*writeStream.on('close', function () {
                         console.log('File ready!');
                         resolve(id);
-                    });
+                    });*/
 
+                    let tryout = function () {
+                        if (writeStream.bytesWritten>1000)
+                            resolve(id);
+                        else
+                            setTimeout(tryout, 200);
+                    };
                     request.pipe(writeStream);
+                    setTimeout(tryout, 200);
                 }else{
-                    console.log('File retrieved!');
+                    //console.log('File retrieved!');
                     resolve(id);
                 }
             });
         });
     },
 
-    playFile: function(id){
+    playFile: async function(id){
         return new Promise((resolve, reject) => {
             if (voiceConnection) {
-                console.log('Playing file!');
-                dispatcher = voiceConnection.playFile(__dirname + '\\audio-downloads\\' + id + '.mp3');
-                dispatcher.setVolume(0.4);
-                resolve(dispatcher);
+                console.log('Playing file! .\\audio-downloads\\' + id + '.mp3');
+                voiceConnection.playFile('.\\audio-downloads\\' + id + '.mp3');
+                voiceConnection.dispatcher.setVolume(0.2);
+                resolve(voiceConnection.dispatcher);
             } else {
-                console.log('No voice connection in playfile!');
-                reject();
+                reject(new Error('No voice connection in playfile!'));
             }
         });
     },
 
     pause: function(){
-        if (dispatcher)
-            dispatcher.pause();
+        if (voiceConnection.dispatcher)
+            voiceConnection.dispatcher.pause();
     },
 
     resume: function(){
-        if (dispatcher)
-            dispatcher.resume();
+        if (voiceConnection.dispatcher)
+            voiceConnection.dispatcher.resume();
     },
 
     stop: function() {
-        if (dispatcher)
-            dispatcher.end();
+        if (voiceConnection.dispatcher)
+            voiceConnection.dispatcher.end();
     },
 
     disconnect: function(){
         if (voiceConnection) {
             voiceConnection.disconnect();
-            voiceConnection = dispatcher = voiceReceiver = null;
+            voiceConnection = null;
         }
     },
 
     volume: function(v){
-        if (dispatcher)
-            dispatcher.setVolume(v)
+        if (voiceConnection.dispatcher)
+            voiceConnection.dispatcher.setVolume(v)
     },
 
     isPlaying: function () {
-        if (dispatcher)
-            return dispatcher.isPlaying();
+        if (voiceConnection.dispatcher)
+            return voiceConnection.dispatcher.isPlaying();
     }
 };

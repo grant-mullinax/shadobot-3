@@ -4,13 +4,13 @@
   "description": "",
   "main": "main.js",
   "dependencies": {
-    "discord.js": "^11.2.1",
+    "discord.js": "^11.3.0",
     "ffmpeg-binaries": "^3.2.2-3",
-    "opusscript": "0.0.4",
+    "opusscript": "0.0.6",
     "spotify-web-api-node": "^2.5.0",
     "youtube-dl": "^1.12.2",
     "youtube-search": "^1.0.10",
-    "ytdl-core": "^0.17.1"
+    "ytdl-core": "^0.18.7"
   },
   "devDependencies": {},
   "scripts": {

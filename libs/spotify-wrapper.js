@@ -12,7 +12,7 @@ api.clientCredentialsGrant()
 
 module.exports = {
     getRandomSongDescriptionFromPlayist: async function (user, id) {
-        console.log(user, id);
+        //console.log(user, id);
         return new Promise((resolve, reject) => {
             //wew lad
             //gotta get the total list

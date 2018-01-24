@@ -1,5 +1,5 @@
 const Command = require('./command');
-const parser = require('./arg-parser');
+const parser = require('../parsing/arg-parser');
 
 module.exports = {
     "slots": new Command(function(msg){

@@ -8,3 +8,4 @@
 node_modules/
 audio-downloads/
 libs/api-keys.js
+run.bat

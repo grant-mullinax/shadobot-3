@@ -22,7 +22,7 @@ async function parseMessage(msg){
     let commandName = msg.content.split(' ')[0];
     if (typeof commands[commandName] !== 'undefined'){
 
-        if (!msg.channel.name.includes('bot')) {
+        if (!msg.channel.name.includes('bot') && false) {
             let dmChannel = msg.author.dmChannel;
             if (dmChannel === null) {
                 dmChannel = await msg.author.createDM();
@@ -30,6 +30,7 @@ async function parseMessage(msg){
 
             dmChannel.send("i can only be used in the bot channel, fool!");
             msg.delete();
+            return;
         }
 
         try {
